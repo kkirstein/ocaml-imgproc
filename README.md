@@ -1,4 +1,4 @@
-# ocaml-playground
+# ocaml-imgproc
 
 A image processing library written in OCaml.
 
