@@ -1,0 +1,17 @@
+# vim files
+*~
+*.swp
+
+# ocp-build
+.ocp/
+_obuild/
+
+# ocamlbuild
+_build/
+*.native
+*.byte
+
+# compiler output
+*.cmi
+*.cmo
+
