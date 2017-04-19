@@ -1,0 +1,5 @@
+true: package(bigarray), package(stb_image), package(stb_image_write)
+<bin/test_runner.*>: package(oUnit), package(qcheck)
+true:	bin_annot
+<bin>: include
+<lib>: include

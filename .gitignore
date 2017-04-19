@@ -8,10 +8,14 @@ _obuild/
 
 # ocamlbuild
 _build/
-*.native
-*.byte
 
-# compiler output
-*.cmi
-*.cmo
+# dist
+dist/
 
+# generated test files
+test_runner.ml
+qtest.targets.log
+
+# generated images
+*.ppm
+test_output
