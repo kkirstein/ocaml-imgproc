@@ -6,6 +6,7 @@
 
 open Img_proc
 open Img_proc_io
+open Img_proc_color
 
 (* load example image *)
 let lena = load "./test_images/lena.jpg"
