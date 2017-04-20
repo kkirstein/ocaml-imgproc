@@ -19,6 +19,7 @@ all: native byte # profile debug
 clean:
 	#$(OCB) -clean
 	rm -rf _build
+	rm -rf test_output
 	rm -f $(main).native
 	rm -f $(main).byte
 	rm -f $(main_test).ml
@@ -44,6 +45,7 @@ debug:
 	$(OCB) $(OCB_FLAGS) -tag debug _build/$(main).byte
 
 run: native
+	mkdir -p test_output
 	_build/bin/$(main).native
 
 # build c stubs
