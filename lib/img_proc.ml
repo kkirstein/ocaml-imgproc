@@ -145,4 +145,7 @@ let get_pix_float3 img x y =
   (0, 1, 2) (get_pix_int3 (Int img_rgb) 0 0)
   (3, 4, 5) (get_pix_int3 (Int img_rgb) 1 0)
   (28, 29, 30) (get_pix_int3 (Int img_rgb) 0 1)
+  (25, 26, 27) (get_pix_int3 (Int img_rgb) 179 0)
+  (4, 5, 6) (get_pix_int3 (Int img_rgb) 0 119)
+  (29, 30, 31) (get_pix_int3 (Int img_rgb) 179 119)
 *)
