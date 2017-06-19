@@ -9,8 +9,12 @@ open Bigarray
 
 (* color mode of image data *)
 type color_mode =
-	| RGB
+  | RGB
   | Gray
+
+let channels_of_cmode = function
+  | RGB   -> 3
+  | Gray  -> 1
 
 (* buffer to hold pixel data *)
 type ('a, 'b) image_buffer =
@@ -57,26 +61,26 @@ let channels img =
                   i.width i.height i.channels (string_of_cmode i.cmode)
 *)
 (*$inject
-  let img_rgb = {width = 180; height = 120; channels = 3; cmode = RGB;
-                  data = Bigarray.Genarray.create Bigarray.Int8_unsigned Bigarray.C_layout [|120; 180; 3|]}
-  let img_rgb_f = {width = 180; height = 120; channels = 3; cmode = RGB;
-                  data = Bigarray.Genarray.create Bigarray.Float32 Bigarray.C_layout [|120; 180; 3|]}
- *)
+  open Img_proc_test
+
+  let img_rgb = match (img_data_demo 180 120 3 "int") with Int img' -> img'
+  let img_rgb_f = match (img_data_demo 180 120 3 "float") with Float img' -> img'
+*)
 
 (** check image for given color mode and number of channels
   * throws an exception if given constraints are violated *)
 let check_int ?channels ?color_mode img =
   match img with
   | Int i   -> begin
-    match channels, color_mode with
-    | Some ch, Some cm  -> if ch <> i.channels then failwith "Wrong number of channels"
-                            else if cm <> i.cmode then failwith "Wrong color mode"
-                            else i
-    | Some ch, None     -> if ch <> i.channels then failwith "Wrong number of channels"
-                            else i
-    | None, Some cm     -> if cm <> i.cmode then failwith "Wrong color mode"
-                            else i
-    | None, None ->  i
+      match channels, color_mode with
+      | Some ch, Some cm  -> if ch <> i.channels then failwith "Wrong number of channels"
+        else if cm <> i.cmode then failwith "Wrong color mode"
+        else i
+      | Some ch, None     -> if ch <> i.channels then failwith "Wrong number of channels"
+        else i
+      | None, Some cm     -> if cm <> i.cmode then failwith "Wrong color mode"
+        else i
+      | None, None ->  i
     end
   | _       -> failwith "Wrong data type, expected Int"
 (*$= check_int
@@ -94,25 +98,51 @@ let check_int ?channels ?color_mode img =
 let check_float ?channels ?color_mode img =
   match img with
   | Float i   -> begin
-    match channels, color_mode with
-    | Some ch, Some cm  -> if ch <> i.channels then failwith "Wrong number of channels"
-                            else if cm <> i.cmode then failwith "Wrong color mode"
-                            else i
-    | Some ch, None     -> if ch <> i.channels then failwith "Wrong number of channels"
-                            else i
-    | None, Some cm     -> if cm <> i.cmode then failwith "Wrong color mode"
-                            else i
-    | None, None ->  i
+      match channels, color_mode with
+      | Some ch, Some cm  -> if ch <> i.channels then failwith "Wrong number of channels"
+        else if cm <> i.cmode then failwith "Wrong color mode"
+        else i
+      | Some ch, None     -> if ch <> i.channels then failwith "Wrong number of channels"
+        else i
+      | None, Some cm     -> if cm <> i.cmode then failwith "Wrong color mode"
+        else i
+      | None, None ->  i
     end
   | _       -> failwith "Wrong data type, expected Float"
-  (*$= check_float
-    img_rgb_f (check_float ~channels:3 ~color_mode:RGB (Float img_rgb_f))
-    img_rgb_f (check_float ~color_mode:RGB (Float img_rgb_f))
-    img_rgb_f (check_float ~channels:3 (Float img_rgb_f))
-    img_rgb_f (check_float (Float img_rgb_f))
-  *)
-  (*$T check_float
-    try ignore(check_float ~color_mode:Gray (Float img_rgb_f)); false with Failure _ -> true
-    try ignore(check_float ~channels:2 (Float img_rgb_f)); false with Failure _ -> true
-    try ignore(check_float (Int img_rgb)); false with Failure _ -> true
-  *)
+(*$= check_float
+  img_rgb_f (check_float ~channels:3 ~color_mode:RGB (Float img_rgb_f))
+  img_rgb_f (check_float ~color_mode:RGB (Float img_rgb_f))
+  img_rgb_f (check_float ~channels:3 (Float img_rgb_f))
+  img_rgb_f (check_float (Float img_rgb_f))
+*)
+(*$T check_float
+  try ignore(check_float ~color_mode:Gray (Float img_rgb_f)); false with Failure _ -> true
+  try ignore(check_float ~channels:2 (Float img_rgb_f)); false with Failure _ -> true
+  try ignore(check_float (Int img_rgb)); false with Failure _ -> true
+*)
+
+(* access pixel data *)
+let get_pix_int1 img x y =
+  let i = check_int ~channels:1 img in
+  Bigarray.Array2.get (Bigarray.array2_of_genarray i.data) x y
+
+let get_pix_float1 img x y =
+  let i = check_float ~channels:1 img in
+  Bigarray.Array2.get (Bigarray.array2_of_genarray i.data) x y
+
+let get_pix_int3 img x y =
+  let i = check_int ~channels:3 img in
+  (Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 0,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 1,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 2)
+
+let get_pix_float3 img x y =
+  let i = check_float ~channels:3 img in
+  (Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 0,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 1,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 2)
+(*$= get_pix_int3 & ~printer:(fun (r, g, b) -> Printf.sprintf "{r: %d, g: %d, b: %d}" r g b)
+  (0, 1, 2) (get_pix_int3 (Int img_rgb) 0 0)
+  (3, 4, 5) (get_pix_int3 (Int img_rgb) 1 0)
+  (28, 29, 30) (get_pix_int3 (Int img_rgb) 0 1)
+*)
