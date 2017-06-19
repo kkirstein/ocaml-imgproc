@@ -135,12 +135,6 @@ let get_pix_int3 img x y =
   (Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 0,
    Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 1,
    Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 2)
-
-let get_pix_float3 img x y =
-  let i = check_float ~channels:3 img in
-  (Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 0,
-   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 1,
-   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 2)
 (*$= get_pix_int3 & ~printer:(fun (r, g, b) -> Printf.sprintf "{r: %d, g: %d, b: %d}" r g b)
   (0, 1, 2) (get_pix_int3 (Int img_rgb) 0 0)
   (3, 4, 5) (get_pix_int3 (Int img_rgb) 1 0)
@@ -148,4 +142,18 @@ let get_pix_float3 img x y =
   (25, 26, 27) (get_pix_int3 (Int img_rgb) 179 0)
   (4, 5, 6) (get_pix_int3 (Int img_rgb) 0 119)
   (29, 30, 31) (get_pix_int3 (Int img_rgb) 179 119)
+*)
+
+let get_pix_float3 img x y =
+  let i = check_float ~channels:3 img in
+  (Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 0,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 1,
+   Bigarray.Array3.get (Bigarray.array3_of_genarray i.data) x y 2)
+(*$= get_pix_float3 & ~printer:(fun (r, g, b) -> Printf.sprintf "{r: %g, g: %g, b: %g}" r g b)
+  (0.0/.64800.0, 1.0/.64800.0, 2.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 0 0)
+  (3.0/.64800.0, 4.0/.64800.0, 5.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 1 0)
+  (28.0/.64800.0, 29.0/.64800.0, 30.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 0 1)
+  (25.0/.64800.0, 26.0/.64800.0, 27.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 179 0)
+  (4.0/.64800.0, 5.0/.64800.0, 6.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 0 119)
+  (29.0/.64800.0, 30.0/.64800.0, 31.0/.64800.0) (get_pix_float3 (Float img_rgb_f) 179 119)
 *)
