@@ -1,19 +1,18 @@
 # ocaml-imgproc
 
-A image processing library written in OCaml.
+An image processing library written in OCaml.
 
 ## Motivation
 
-Why another image library, as there are many good libraries available, for which OCaml bindings could be made, e.g., [OpenCV](http://opencv.org/), [CImg](http://cimg.eu/) or [VIPS](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS)?
-
-* Programming in OCaml is fun!
-* There are always features I am missing in existing libraries or prefer to behave differently.
-* I would like to show that image processing can be done in a functional programming language with decent performance (If you take a closer look at the source, you will see that I'm cheating, there is plenty of imperative code like for loops).
-* I certainly suffer from the NIH (not invented here) syndrome...
+This image processing library uses the [Owl](https://ocaml.xyz) package for scientific computing in OCaml as base.
+Think of it like the Python package [scikit-image](https://scikit-image.org/) is building upon `scipy` and `numpy`.
 
 ## Status
 
 Pretty much pre-alpha...
+
+There are IO function to read and write image data as `Owl` `Ndarray`s. Those are mainly wrappers around
+[stb_image](https://opam.ocaml.org/packages/) and [stb_image_write](https://opam.ocaml.org/packages/stb_image_write/).
 
 ## License
 
