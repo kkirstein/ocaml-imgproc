@@ -1,0 +1,4 @@
+(library
+ (name imgproc)
+ (public_name imgproc)
+ (libraries owl stb_image stb_image_write))

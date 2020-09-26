@@ -2,21 +2,9 @@
 *~
 *.swp
 
-# ocp-build
-.ocp/
-_obuild/
-
-# ocamlbuild
+# build output
 _build/
 
 # dist
 dist/
 
-# generated test files
-test_runner.ml
-qtest.targets.log
-
-# generated images
-*.ppm
-test_output
-scratch.ml

@@ -1,4 +1,0 @@
-S lib/*
-B _build/**
-PKG stb_image
-PKG stb_image_write
