@@ -2,8 +2,9 @@
 *~
 *.swp
 
-# build output
+# generated files
 _build/
+**/.merlin
 
 # dist
 dist/
