@@ -1,7 +1,7 @@
 (executable
  (name test_runner)
   (public_name test_runner)
-  (libraries imgproc alcotest))
+  (libraries imgproc owl alcotest))
 
 (rule
  (alias runtest)
