@@ -11,11 +11,6 @@
 
 open Owl.Dense.Ndarray
 
-val mean_std_line :
-  ?orient:[< `Hor | `Ver > `Hor ] -> S.arr -> float array * float array
-(** [mean_std_line orient img] calculates both the mean values and standard deviation
-    of pixel values along the given orientation [orient]. *)
-
 val centroid_line :
   ?orient:[< `Hor | `Ver > `Hor ] ->
   S.arr ->

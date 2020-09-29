@@ -11,36 +11,6 @@
 
 open Owl.Dense.Ndarray
 
-(* calculate std-dev for columns or rows *)
-let mean_std_line ?(orient = `Hor) img =
-  let open Owl.Dense.Ndarray in
-  let dims = S.shape img in
-  let w, h = (dims.(1), dims.(0)) in
-  let results =
-    match orient with
-    | `Hor ->
-        let mean = Array.create_float w in
-        let std = Array.create_float w in
-        for x = 0 to w - 1 do
-          let line_img = S.get_slice [ []; [ x ] ] img in
-          let m, s = (S.mean' line_img, S.std' line_img) in
-          mean.(x) <- m;
-          std.(x) <- s
-        done;
-        (mean, std)
-    | `Ver ->
-        let mean = Array.create_float h in
-        let std = Array.create_float h in
-        for y = 0 to h - 1 do
-          let line_img = S.get_slice [ [ y ]; [] ] img in
-          let m, s = (S.mean' line_img, S.std' line_img) in
-          mean.(y) <- m;
-          std.(y) <- s
-        done;
-        (mean, std)
-  in
-  results
-
 (* calculate centroid of 1d array *)
 let centroid ary =
   let arr = S.to_array ary in
