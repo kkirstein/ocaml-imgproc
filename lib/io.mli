@@ -44,7 +44,7 @@ val save :
   (unit, [> `Invalid_dimension of int ]) result
 (** [save ?fmt file_path img] writes given image data [img] to
     a file of format [fmt]. Returns [`Invalid_dimension n] error, if
-    invaid dimensions are given. *)
+    invalid dimensions are given. *)
 
 val load :
   string ->
@@ -55,7 +55,7 @@ val load :
     a Ndarray. The NDarray is arranged in [col; row] coordinates,
     compared to [x; y], often used in image processing.
     Returns [`IO_error str] error, if the image file
-    could not read. *)
+    could not be read. *)
 
 val to_grayscale :
   Owl.Dense.Ndarray.S.arr ->
