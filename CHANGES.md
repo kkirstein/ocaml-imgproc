@@ -1,4 +1,8 @@
-# 0.1.0 (work-in-progress)
+# 0.1.1
+
+* support single & double precision arrays
+
+# 0.1.0
 
 * basic image save/read functions based on `stb_image[_write]`
 * image data is based on `Owl.Dense.Ndarray.S`
