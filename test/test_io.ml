@@ -28,40 +28,40 @@ let test_images () =
 
 (* ------------------------------------------------------------------------- *)
 let test_load_rgb () =
-  let rgb_img = Io.load rgb_file |> Result.get_ok in
+  let rgb_img = Io.S.load rgb_file |> Result.get_ok in
   Alcotest.(check (array int))
     "load RGB image" [| 480; 512; 3 |] (Generic.shape rgb_img)
 
 (* ------------------------------------------------------------------------- *)
 let test_load_gray () =
-  let gray_img = Io.load gray_file |> Result.get_ok in
+  let gray_img = Io.S.load gray_file |> Result.get_ok in
   Alcotest.(check (array int))
     "load Grayscale image" [| 480; 512 |] (Generic.shape gray_img)
 
 (* ------------------------------------------------------------------------- *)
 let test_save_rgb () =
-  let rgb_img = Io.load rgb_file |> Result.get_ok in
+  let rgb_img = Io.S.load rgb_file |> Result.get_ok in
   (* Alcotest.(check (result unit error_type))
      "save RGB image" (Ok ())
      (Io.save test_file rgb_img); *)
   Alcotest.(check bool)
     "save RGB image" true
-    (Io.save test_file rgb_img |> Result.is_ok);
-  let test_img = Io.load test_file |> Result.get_ok in
+    (Io.S.save test_file rgb_img |> Result.is_ok);
+  let test_img = Io.S.load test_file |> Result.get_ok in
   Alcotest.(check bool)
     "compare with original image" true
     Generic.(rgb_img = test_img)
 
 (* ------------------------------------------------------------------------- *)
 let test_save_gray () =
-  let gray_img = Io.load gray_file |> Result.get_ok in
+  let gray_img = Io.S.load gray_file |> Result.get_ok in
   (* Alcotest.(check (result unit error_type))
      "save RGB image" (Ok ())
      (Io.save test_file rgb_img); *)
   Alcotest.(check bool)
     "save grayscale image" true
-    (Io.save test_file gray_img |> Result.is_ok);
-  let test_img = Io.load test_file |> Result.get_ok in
+    (Io.S.save test_file gray_img |> Result.is_ok);
+  let test_img = Io.S.load test_file |> Result.get_ok in
   Alcotest.(check bool)
     "compare with original image" true
     Generic.(gray_img = test_img)
