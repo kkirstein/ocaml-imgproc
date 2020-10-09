@@ -2,21 +2,7 @@
   Imgproc module offers some basic image processing functions
   for image data given as Owl's Ndarray *)
 
-module type Ndary = sig
-  type arr
-
-  type elt = float
-
-  val init : int array -> (int -> elt) -> arr
-
-  val shape : arr -> int array
-
-  val num_dims : arr -> int
-
-  val reshape : arr -> int array -> arr
-
-  val iteri : (int -> elt -> unit) -> arr -> unit
-end
+include Ndarray_intf
 
 module type Io = sig
   type ary_type
@@ -42,7 +28,7 @@ module type Io = sig
     (ary_type, [> `IO_error of string | `Invalid_dimension of int ]) result
 end
 
-module Make (A : Ndary) : Io with type ary_type := A.arr = struct
+module Make (A : Ndarray) : Io with type ary_type := A.arr = struct
   (* convert given image buffer to Ndarray and vice-versa *)
   let image_to_ndarray img =
     let w = Stb_image.width img in

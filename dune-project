@@ -17,6 +17,6 @@
  (description "Common image processing functions")
  (depends
   (alcotest :with-test)
-  (owl (>= 0.9.0))
+  (owl (>= 0.10.0))
   (stb_image (>= 0.5))
   (stb_image_write (>= 0.2))))

@@ -9,29 +9,7 @@
  
 *)
 
-module type Ndary = sig
-  type arr
-
-  type elt = float
-
-  (* val init : int array -> (int -> elt) -> arr
-*)
-  val shape : arr -> int array
-
-  val num_dims : arr -> int
-
-  val get_slice : int list list -> arr -> arr
-
-  val mean : ?axis:int -> arr -> arr
-
-  val to_array : arr -> elt array
-
-  val of_array : elt array -> int array -> arr
-
-  val map_slice : ?axis:int -> (arr -> 'c) -> arr -> 'c array
-
-  val transpose : ?axis:int array -> arr -> arr
-end
+include Ndarray_intf
 
 module type Ops = sig
   type ary_type
@@ -55,7 +33,7 @@ module type Ops = sig
     (ary_type, [> `Invalid_dimensions of int | `Invalid_index of int ]) result
 end
 
-module Make (A : Ndary) : Ops with type ary_type := A.arr = struct
+module Make (A : Ndarray) : Ops with type ary_type := A.arr = struct
   (* calculate centroid of 1d array *)
   let centroid ary =
     let arr = A.to_array ary in
