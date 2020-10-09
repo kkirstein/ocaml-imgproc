@@ -2,7 +2,7 @@
 
 (name imgproc)
 
-(version 0.1.1)
+(version 0.1.1-dev)
 
 (generate_opam_files true)
 
