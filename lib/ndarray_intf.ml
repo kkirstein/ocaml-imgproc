@@ -1,10 +1,12 @@
-(** ndarray_intf
+(* vim: set ft=ocaml sw=2 ts=2: *)
+
+(**
+    Ndarray
     
-    Define module type for generic Owl.Dense.Ndarray module
-    
-    This is used to provide a module functor to support
-    different Ndarray types in Imgproc
-    *)
+    Module type definition for generic image processing
+    for different Owl.Dense.Ndarray data types
+
+*)
 
 module type Ndarray = sig
   type arr
