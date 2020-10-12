@@ -1,7 +1,7 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
 (**
-    Imgio module offers some basic image input/output functions
+    Io module offers some basic image input/output functions
     for image data given as Owl's Ndarray.
     
     Author: Kay-Uwe Kirstein <kay-uwe@kirsteinhome.ch>
@@ -49,8 +49,12 @@ module type Io = sig
 end
 
 module S : Io with type ary_type := Owl.Dense.Ndarray.S.arr
+(** Implementation of image IO, based on single precision data type.
+    For documentation of the individual function see {!type: Io}. *)
 
 module D : Io with type ary_type := Owl.Dense.Ndarray.D.arr
+(** Implementation of image IO, based on double precision data type.
+    For documentation of the individual function see {!type: Io}. *)
 
 val print_img_info :
   ('a, 'b) Owl.Dense.Ndarray.Generic.t ->
