@@ -14,12 +14,12 @@ module type Color = sig
 
   val to_gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray nd] converts given image data to grayscale. It works for
-    image data with 3 color channels and returns the original image, if a single
-    color channel is given. Otherwise an [`Invalid_dimension n] error is returned. *)
+      image data with 3 color channels and returns the original image, if a single
+      color channel is given. Otherwise an [`Invalid_dimension n] error is returned. *)
 
   val to_gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray' nd] like [to_gray], but reduces the number of dimensions and
-    returns a 2D-matrix. See {!to_gray} for more details. *)
+      returns a 2D-matrix. See {!to_gray} for more details. *)
 end
 
 module S : Color with type ary_type := Owl.Dense.Ndarray.S.arr
