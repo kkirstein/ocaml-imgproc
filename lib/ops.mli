@@ -1,11 +1,13 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
 (**
-   Imgops
-   Module with image processing functions for the SVC2 camera test
-   in Uster production
-  
-   Author: kayuwe.kirstein
+    Imgops
+    Module with some basic image processing functions
+    
+    @deprecated These function will go to dedicated modules
+    in future releases.
+    
+    Author: Kay-Uwe Kirstein <kay-uwe@kirsteinhome.ch>
   
 *)
 
@@ -17,8 +19,8 @@ module type Ops = sig
     ary_type ->
     (ary_type, [> `Invalid_dimensions of int ]) result
   (** [centroid_line ~orient img] calculates centroid values (1. moment) of
-    pixel values along the given orientation [orient].
-    Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
+      pixel values along the given orientation [orient].
+      Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
 
   val profile_line :
     ?orient:[< `Hor | `Ver > `Hor ] ->
@@ -26,8 +28,8 @@ module type Ops = sig
     ary_type ->
     (ary_type, [> `Invalid_dimensions of int | `Invalid_index of int ]) result
   (** [profile_line ~orient coord img] extracts pixel values at [coord] long the given
-    orientation [orient].
-    Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
+      orientation [orient].
+      Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
 
   val avg_line :
     ?orient:[< `Hor | `Ver > `Hor ] ->
@@ -36,9 +38,9 @@ module type Ops = sig
     ary_type ->
     (ary_type, [> `Invalid_dimensions of int | `Invalid_index of int ]) result
   (** [avg_line ~orient ?avg coord img] extracts pixel values at [coord] along the given
-    orientation [orient] and performs additional averaging of pixel values
-    along the other dimension.
-    Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
+      orientation [orient] and performs additional averaging of pixel values
+      along the other dimension.
+      Returns [`Invalid_dimensions] error, if [img] is not 2 dimensional. *)
 end
 
 module S : Ops with type ary_type := Owl.Dense.Ndarray.S.arr

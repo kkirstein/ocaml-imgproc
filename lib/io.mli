@@ -1,10 +1,10 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
 (**
-  Imgio module offers some basic image input/output functions
-  for image data given as Owl's Ndarray.
-  
-  Author: kayuwe.kirstein
+    Imgio module offers some basic image input/output functions
+    for image data given as Owl's Ndarray.
+    
+    Author: Kay-Uwe Kirstein <kay-uwe@kirsteinhome.ch>
   
   *)
 
