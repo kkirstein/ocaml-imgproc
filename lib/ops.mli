@@ -1,7 +1,7 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
 (**
-    Imgops
+    Ops
     Module with some basic image processing functions
     
     @deprecated These function will go to dedicated modules
