@@ -13,8 +13,10 @@
 
 (package
  (name imgproc)
- (synopsis "Common image processing functions")
- (description "Common image processing functions")
+ (synopsis "Common image processing functions for owl")
+ (description "This package provides image processing
+ facilities for owl, like loading & saving common image file formats
+ and color conversion.")
  (depends
   (alcotest :with-test)
   (owl (>= 0.10.0))
