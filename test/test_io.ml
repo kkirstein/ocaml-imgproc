@@ -1,7 +1,6 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
 open Imgproc
-open Owl.Dense.Ndarray
 
 (* Testable types *)
 let error_cmp a b =
@@ -27,70 +26,78 @@ let test_images () =
   Alcotest.(check bool) "Grayscale image" true (Sys.file_exists gray_file)
 
 (* ------------------------------------------------------------------------- *)
-let test_load_rgb () =
-  let rgb_img_s = Io.S.load rgb_file |> Result.get_ok in
-  let rgb_img_d = Io.D.load rgb_file |> Result.get_ok in
-  Alcotest.(check (array int))
-    "load RGB image (single)" [| 480; 512; 3 |] (Generic.shape rgb_img_s);
-  Alcotest.(check (array int))
-    "load RGB image (double)" [| 480; 512; 3 |] (Generic.shape rgb_img_d)
+module type Dut = sig
+  include Io.Io
+
+  val shape : ary_type -> int array
+
+  val equal : ary_type -> ary_type -> bool
+end
+
+module Make (Dut : Dut) = struct
+  let test_load_rgb () =
+    let rgb_img = Dut.load rgb_file |> Result.get_ok in
+    Alcotest.(check (array int))
+      "load RGB image" [| 480; 512; 3 |] (Dut.shape rgb_img)
+
+  let test_load_gray () =
+    let gray_img_s = Dut.load gray_file |> Result.get_ok in
+    Alcotest.(check (array int))
+      "load Grayscale image" [| 480; 512 |] (Dut.shape gray_img_s)
+
+  let test_save_rgb () =
+    let rgb_img = Dut.load rgb_file |> Result.get_ok in
+    Alcotest.(check bool)
+      "save RGB image" true
+      (Dut.save test_file rgb_img |> Result.is_ok);
+    let test_img = Dut.load test_file |> Result.get_ok in
+    Alcotest.(check bool)
+      "compare with original image" true
+      (Dut.equal rgb_img test_img)
+
+  let test_save_gray () =
+    let gray_img = Dut.load gray_file |> Result.get_ok in
+    Alcotest.(check bool)
+      "save grayscale image" true
+      (Dut.save test_file gray_img |> Result.is_ok);
+    let test_img = Dut.load test_file |> Result.get_ok in
+    Alcotest.(check bool)
+      "compare with original image" true
+      (Dut.equal gray_img test_img)
+end
 
 (* ------------------------------------------------------------------------- *)
-let test_load_gray () =
-  let gray_img_s = Io.S.load gray_file |> Result.get_ok in
-  let gray_img_d = Io.D.load gray_file |> Result.get_ok in
-  Alcotest.(check (array int))
-    "load Grayscale image (single)" [| 480; 512 |] (Generic.shape gray_img_s);
-  Alcotest.(check (array int))
-    "load Grayscale image (double)" [| 480; 512 |] (Generic.shape gray_img_d)
+module S = Make (struct
+  include Io.S
+
+  type ary_type = Owl.Dense.Ndarray.S.arr
+
+  let shape = Owl.Dense.Ndarray.S.shape
+
+  let equal = Owl.Dense.Ndarray.S.equal
+end)
+
+module D = Make (struct
+  include Io.D
+
+  type ary_type = Owl.Dense.Ndarray.D.arr
+
+  let shape = Owl.Dense.Ndarray.D.shape
+
+  let equal = Owl.Dense.Ndarray.D.equal
+end)
 
 (* ------------------------------------------------------------------------- *)
-let test_save_rgb () =
-  let rgb_img_s = Io.S.load rgb_file |> Result.get_ok in
-  let rgb_img_d = Io.D.load rgb_file |> Result.get_ok in
-  (* Alcotest.(check (result unit error_type))
-     "save RGB image" (Ok ())
-     (Io.save test_file rgb_img); *)
-  Alcotest.(check bool)
-    "save RGB image (single)" true
-    (Io.S.save test_file rgb_img_s |> Result.is_ok);
-  let test_img = Io.S.load test_file |> Result.get_ok in
-  Alcotest.(check bool)
-    "compare with original image (single)" true
-    Generic.(rgb_img_s = test_img);
-  Alcotest.(check bool)
-    "save RGB image (double)" true
-    (Io.D.save test_file rgb_img_d |> Result.is_ok);
-  let test_img = Io.D.load test_file |> Result.get_ok in
-  Alcotest.(check bool)
-    "compare with original image (double)" true
-    Generic.(rgb_img_d = test_img)
-
-(* ------------------------------------------------------------------------- *)
-let test_save_gray () =
-  let gray_img_s = Io.S.load gray_file |> Result.get_ok in
-  let gray_img_d = Io.D.load gray_file |> Result.get_ok in
-  Alcotest.(check bool)
-    "save grayscale image (single)" true
-    (Io.S.save test_file gray_img_s |> Result.is_ok);
-  let test_img = Io.S.load test_file |> Result.get_ok in
-  Alcotest.(check bool)
-    "compare with original image (single)" true
-    Generic.(gray_img_s = test_img);
-  Alcotest.(check bool)
-    "save grayscale image (double)" true
-    (Io.D.save test_file gray_img_d |> Result.is_ok);
-  let test_img = Io.D.load test_file |> Result.get_ok in
-  Alcotest.(check bool)
-    "compare with original image (double)" true
-    Generic.(gray_img_d = test_img)
-
 (* Test set *)
 let test_set =
   [
     ("test images", `Quick, test_images);
-    ("load RGB image", `Quick, test_load_rgb);
-    ("load grascale image", `Quick, test_load_gray);
-    ("save RGB image", `Quick, test_save_rgb);
-    ("save grayscale image", `Quick, test_save_gray);
+    ("load RGB image (S)", `Quick, S.test_load_rgb);
+    ("load RGB image (D)", `Quick, D.test_load_rgb);
+    ("load grascale image (S)", `Quick, S.test_load_gray);
+    ("load grascale image (D)", `Quick, D.test_load_gray);
+    ("save RGB image (S)", `Quick, S.test_save_rgb);
+    ("save RGB image (D)", `Quick, D.test_save_rgb);
+    ("save grayscale image (S)", `Quick, S.test_save_gray);
+    ("save grayscale image (D)", `Quick, D.test_save_gray);
   ]
