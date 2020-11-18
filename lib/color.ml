@@ -14,13 +14,13 @@ include Ndarray_intf
 module type Color = sig
   type ary_type
 
-  val to_gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
 
-  val to_gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
 end
 
 module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
-  let to_gray img =
+  let rgb2gray img =
     let dims = A.shape img in
     match Array.length dims with
     | 2 -> Ok img
@@ -30,9 +30,9 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
         Ok A.((r *$ 0.2125) + (g *$ 0.7154) + (b *$ 0.0721))
     | x -> Error (`Invalid_dimension x)
 
-  let to_gray' img =
+  let rgb2gray' img =
     let dims = A.shape img in
-    let gray_conv = to_gray img in
+    let gray_conv = rgb2gray img in
     Result.bind gray_conv (fun i -> Ok (A.reshape i [| dims.(0); dims.(1) |]))
 end
 

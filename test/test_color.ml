@@ -32,8 +32,8 @@ module type Dut = sig
 end
 
 module Make (Dut : Dut) = struct
-  let test_to_gray () =
-    let to_gray = Dut.to_gray Dut.rgb_img in
+  let test_rgb2gray () =
+    let to_gray = Dut.rgb2gray Dut.rgb_img in
     Alcotest.(check bool) "to_gray returns Ok _" true (Result.is_ok to_gray);
     let to_gray_img = Result.get_ok to_gray in
     Alcotest.(check (array int))
@@ -43,8 +43,8 @@ module Make (Dut : Dut) = struct
       "to_gray returns grayscale values" true
       (Dut.approx_equal ~eps:0.05 to_gray_img Dut.gray_img)
 
-  let test_to_gray' () =
-    let to_gray = Dut.to_gray' Dut.rgb_img in
+  let test_rgb2gray' () =
+    let to_gray = Dut.rgb2gray' Dut.rgb_img in
     Alcotest.(check bool) "to_gray returns Ok _" true (Result.is_ok to_gray);
     let to_gray_img = Result.get_ok to_gray in
     Alcotest.(check (array int))
@@ -87,8 +87,8 @@ end)
 (* Test set *)
 let test_set =
   [
-    ("test to_gray (S)", `Quick, S.test_to_gray);
-    ("test to_gray (D)", `Quick, D.test_to_gray);
-    ("test to_gray' (S)", `Quick, S.test_to_gray');
-    ("test to_gray' (D)", `Quick, D.test_to_gray');
+    ("test to_gray (S)", `Quick, S.test_rgb2gray);
+    ("test to_gray (D)", `Quick, D.test_rgb2gray);
+    ("test to_gray' (S)", `Quick, S.test_rgb2gray');
+    ("test to_gray' (D)", `Quick, D.test_rgb2gray');
   ]

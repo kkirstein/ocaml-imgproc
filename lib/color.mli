@@ -12,12 +12,12 @@
 module type Color = sig
   type ary_type
 
-  val to_gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray nd] converts given image data to grayscale. It works for
       image data with 3 color channels and returns the original image, if a single
       color channel is given. Otherwise an [`Invalid_dimension n] error is returned. *)
 
-  val to_gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray' nd] like [to_gray], but reduces the number of dimensions and
       returns a 2D-matrix. See {!to_gray} for more details. *)
 end
