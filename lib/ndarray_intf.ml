@@ -9,47 +9,12 @@
 *)
 
 module type Ndarray = sig
-  type arr
-
   type elt = float
 
-  (* creation *)
-  val init : int array -> (int -> elt) -> arr
+  (* include module signature of Owl.Dense.Ndarray *)
+  include Owl_dense_ndarray_intf.Common with type elt := float
 
-  (* shape info & manipulation *)
-  val shape : arr -> int array
-
-  val num_dims : arr -> int
-
-  val reshape : arr -> int array -> arr
-
-  val transpose : ?axis:int array -> arr -> arr
-
-  val split : ?axis:int -> int array -> arr -> arr array
-
-  val concatenate : ?axis:int -> arr array -> arr
-
-  val expand : ?hi:bool -> arr -> int -> arr
-
-  val repeat : arr -> int array -> arr
-
-  val slice_left : arr -> int array -> arr
-
-  val get_slice : int list list -> arr -> arr
-
-  (* conversion *)
-  val to_array : arr -> elt array
-
-  val of_array : elt array -> int array -> arr
-
-  (* iterators *)
-  val map_slice : ?axis:int -> (arr -> 'c) -> arr -> 'c array
-
-  val iteri : (int -> elt -> unit) -> arr -> unit
-
-  (* math *)
-  val mean : ?axis:int -> ?keep_dims:bool -> arr -> arr
-
+  (* operators *)
   val ( + ) : arr -> arr -> arr
 
   val ( *$ ) : arr -> elt -> arr
