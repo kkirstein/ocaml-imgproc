@@ -20,6 +20,11 @@ module type Color = sig
   val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray' nd] like [to_gray], but reduces the number of dimensions and
       returns a 2D-matrix. See {!to_gray} for more details. *)
+
+  val gray2rgb : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  (** [gray2rgb nd] converts the given grayscale image data [nd]
+      to a 3 channel RGB image. Works for both 2d or single channel 3d image data
+      as input. Otherwise an [`Invalid_dimension n] error is returned. *)
 end
 
 module S : Color with type ary_type := Owl.Dense.Ndarray.S.arr

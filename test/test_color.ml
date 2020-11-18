@@ -48,11 +48,23 @@ module Make (Dut : Dut) = struct
     Alcotest.(check bool) "rgb2gray' returns Ok _" true (Result.is_ok to_gray);
     let to_gray_img = Result.get_ok to_gray in
     Alcotest.(check (array int))
-      "rgb2gray' returns 2d img" [| 480; 512 |]
-      (Dut.shape to_gray_img);
+      "rgb2gray' returns 2d img" [| 480; 512 |] (Dut.shape to_gray_img);
     Alcotest.(check bool)
       "rgb2gray' returns grayscale values" true
       (Dut.approx_equal ~eps:0.05 to_gray_img Dut.gray_img)
+
+  let test_gray2rgb () =
+    let to_rgb = Dut.gray2rgb Dut.gray_img in
+    let to_rgb2 = Result.bind (Dut.rgb2gray' Dut.gray_img) Dut.gray2rgb in
+    Alcotest.(check bool) "gray2rgb returns Ok _" true (Result.is_ok to_rgb);
+    let to_rgb_img = Result.get_ok to_rgb in
+    let to_rgb_img2 = Result.get_ok to_rgb2 in
+    Alcotest.(check (array int))
+      "gray2rgb returns three channel image" [| 480; 512; 3 |]
+      (Dut.shape to_rgb_img);
+    Alcotest.(check bool)
+      "gray2rgb also works for 2d input" true
+      Dut.(approx_equal to_rgb_img to_rgb_img2)
 end
 
 (* ------------------------------------------------------------------------- *)
@@ -91,4 +103,6 @@ let test_set =
     ("test rgb2gray (D)", `Quick, D.test_rgb2gray);
     ("test rgb2gray' (S)", `Quick, S.test_rgb2gray');
     ("test rgb2gray' (D)", `Quick, D.test_rgb2gray');
+    ("test gray2rgb (S)", `Quick, S.test_gray2rgb);
+    ("test gray2rgb (D)", `Quick, D.test_gray2rgb);
   ]

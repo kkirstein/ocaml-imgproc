@@ -17,6 +17,8 @@ module type Color = sig
   val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
 
   val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+
+  val gray2rgb : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
 end
 
 module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
@@ -34,6 +36,15 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
     let dims = A.shape img in
     let gray_conv = rgb2gray img in
     Result.bind gray_conv (fun i -> Ok (A.reshape i [| dims.(0); dims.(1) |]))
+
+  let gray2rgb img =
+    let dims = A.shape img in
+    match Array.length dims with
+    | 2 -> Ok (A.repeat (A.expand ~hi:true img 3) [| 1; 1; 3 |])
+    | 3 when dims.(3) = 1 ->
+        let gray_mat = A.slice_left img [| dims.(0); dims.(1) |] in
+        Ok (A.repeat (A.expand ~hi:true gray_mat 3) [| 1; 1; 3 |])
+    | x -> Error (`Invalid_dimension x)
 end
 
 module S = Make (Owl.Dense.Ndarray.S)

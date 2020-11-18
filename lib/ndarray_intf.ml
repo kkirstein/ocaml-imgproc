@@ -27,6 +27,14 @@ module type Ndarray = sig
 
   val split : ?axis:int -> int array -> arr -> arr array
 
+  val concatenate : ?axis:int -> arr array -> arr
+
+  val expand : ?hi:bool -> arr -> int -> arr
+
+  val repeat : arr -> int array -> arr
+
+  val slice_left : arr -> int array -> arr
+
   val get_slice : int list list -> arr -> arr
 
   (* conversion *)
