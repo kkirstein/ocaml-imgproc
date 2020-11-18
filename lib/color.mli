@@ -12,6 +12,12 @@
 module type Color = sig
   type ary_type
 
+  val adjust :
+    ?min:float -> ?max:float -> ?channel:int array -> ary_type -> ary_type
+  (** [adjust ?min ?max ?channel nd] adjusts the value range of given [nd]
+      to [min] .. [max]. If [channel] is not given, it applies to all channels
+      of [nd]. *)
+
   val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
   (** [to_gray nd] converts given image data to grayscale. It works for
       image data with 3 color channels and returns the original image, if a single

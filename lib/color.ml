@@ -14,6 +14,9 @@ include Ndarray_intf
 module type Color = sig
   type ary_type
 
+  val adjust :
+    ?min:float -> ?max:float -> ?channel:int array -> ary_type -> ary_type
+
   val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
 
   val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
@@ -22,6 +25,24 @@ module type Color = sig
 end
 
 module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
+  let adjust_global ?(min = 0.0) ?(max = 1.0) nd =
+    let scaling = (max -. min) /. (A.max' nd -. A.min' nd) in
+    let offset = (A.min' nd *. scaling) -. min in
+    Printf.printf "offset: %f; scaling: %f" offset scaling;
+    A.map (fun x -> x *. scaling -. offset) nd
+
+  let adjust ?(min = 0.0) ?(max = 1.0) ?channel nd =
+    let num_dims = A.num_dims nd in
+    match num_dims with
+    | 1 | 2 -> adjust_global ~min ~max nd
+    | _n ->
+        let _chan =
+          match channel with
+          | Some cs -> Array.to_list cs
+          | None -> List.init num_dims (fun x -> x)
+        in
+        failwith "Not implemented"
+
   let rgb2gray img =
     let dims = A.shape img in
     match Array.length dims with
