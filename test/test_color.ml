@@ -28,7 +28,13 @@ module type Dut = sig
 
   val shape : ary_type -> int array
 
+  val split : ?axis:int -> int array -> ary_type -> ary_type array
+
   val approx_equal : ?eps:float -> ary_type -> ary_type -> bool
+
+  val min' : ary_type -> float
+
+  val max' : ary_type -> float
 end
 
 module Make (Dut : Dut) = struct
@@ -65,6 +71,50 @@ module Make (Dut : Dut) = struct
     Alcotest.(check bool)
       "gray2rgb also works for 2d input" true
       Dut.(approx_equal to_rgb_img to_rgb_img2)
+
+  let test_adjust () =
+    let gray_img' = Dut.rgb2gray' Dut.gray_img |> Result.get_ok in
+    let gray_adjusted = Dut.adjust gray_img' in
+    let rgb_adjusted = Dut.adjust Dut.rgb_img in
+    Alcotest.(check bool)
+      "adjust returns Ok _ for 2d image" true
+      (Result.is_ok gray_adjusted);
+    let gray_adjusted_img = Result.get_ok gray_adjusted in
+    Alcotest.(check (float Float.epsilon))
+      "adjust lower bound for 2d image" 0.0
+      (Dut.min' gray_adjusted_img);
+    Alcotest.(check (float Float.epsilon))
+      "adjust upper bound for 2d image" 1.0
+      (Dut.max' gray_adjusted_img);
+
+    Alcotest.(check bool)
+      "adjust return Ok _ for RGB image" true
+      (Result.is_ok rgb_adjusted);
+    let rgb_adjusted_img = Result.get_ok rgb_adjusted in
+    Alcotest.(check (float Float.epsilon))
+      "adjust lower bound for RGB image" 0.0
+      (Dut.min' rgb_adjusted_img);
+    Alcotest.(check (float Float.epsilon))
+      "adjust upper bound for RGB image" 1.0
+      (Dut.max' rgb_adjusted_img);
+
+    let rgb_adjusted2 =
+      Dut.adjust ~min:(-0.5) ~max:0.5 ~channels:[| 0; 2 |] Dut.rgb_img
+    in
+    Alcotest.(check bool)
+      "adjust ~min ~max ~channels return Ok _ for RGB image" true
+      (Result.is_ok rgb_adjusted2);
+    let rgb_channels =
+      Result.get_ok rgb_adjusted2 |> Dut.split ~axis:2 [| 1; 1; 1 |]
+    in
+    Alcotest.(check (array @@ float Float.epsilon))
+      "adjust ~min ~max ~channels lower bound for RGB image"
+      [| -0.5; 0.0; -0.5 |]
+      (Array.map Dut.min' rgb_channels);
+    Alcotest.(check (array @@ float 0.00001)) (* increased tolerance for original image data *)
+      "adjust ~min ~max ~channels upper bound for RGB image"
+      [| 0.5; 0.933333; 0.5 |]
+      (Array.map Dut.max' rgb_channels)
 end
 
 (* ------------------------------------------------------------------------- *)
@@ -79,7 +129,13 @@ module S = Make (struct
 
   let shape = Owl.Dense.Ndarray.S.shape
 
+  let split = Owl.Dense.Ndarray.S.split
+
   let approx_equal = Owl.Dense.Ndarray.S.approx_equal
+
+  let min' = Owl.Dense.Ndarray.S.min'
+
+  let max' = Owl.Dense.Ndarray.S.max'
 end)
 
 module D = Make (struct
@@ -93,7 +149,13 @@ module D = Make (struct
 
   let shape = Owl.Dense.Ndarray.D.shape
 
+  let split = Owl.Dense.Ndarray.D.split
+
   let approx_equal = Owl.Dense.Ndarray.D.approx_equal
+
+  let min' = Owl.Dense.Ndarray.D.min'
+
+  let max' = Owl.Dense.Ndarray.D.max'
 end)
 
 (* Test set *)
@@ -105,4 +167,6 @@ let test_set =
     ("test rgb2gray' (D)", `Quick, D.test_rgb2gray');
     ("test gray2rgb (S)", `Quick, S.test_gray2rgb);
     ("test gray2rgb (D)", `Quick, D.test_gray2rgb);
+    ("test adjust (S)", `Quick, S.test_adjust);
+    ("test adjust (D)", `Quick, D.test_adjust);
   ]

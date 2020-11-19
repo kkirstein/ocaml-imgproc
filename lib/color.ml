@@ -15,33 +15,44 @@ module type Color = sig
   type ary_type
 
   val adjust :
-    ?min:float -> ?max:float -> ?channel:int array -> ary_type -> ary_type
+    ?min:float ->
+    ?max:float ->
+    ?channels:int array ->
+    ary_type ->
+    (ary_type, [> `Invalid_dimensions of int ]) result
 
-  val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray : ary_type -> (ary_type, [> `Invalid_dimensions of int ]) result
 
-  val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimensions of int ]) result
 
-  val gray2rgb : ary_type -> (ary_type, [> `Invalid_dimension of int ]) result
+  val gray2rgb : ary_type -> (ary_type, [> `Invalid_dimensions of int ]) result
 end
 
 module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
   let adjust_global ?(min = 0.0) ?(max = 1.0) nd =
     let scaling = (max -. min) /. (A.max' nd -. A.min' nd) in
     let offset = (A.min' nd *. scaling) -. min in
-    Printf.printf "offset: %f; scaling: %f" offset scaling;
-    A.map (fun x -> x *. scaling -. offset) nd
+    A.map (fun x -> (x *. scaling) -. offset) nd
 
-  let adjust ?(min = 0.0) ?(max = 1.0) ?channel nd =
+  let adjust ?(min = 0.0) ?(max = 1.0) ?channels nd =
     let num_dims = A.num_dims nd in
     match num_dims with
-    | 1 | 2 -> adjust_global ~min ~max nd
-    | _n ->
-        let _chan =
-          match channel with
-          | Some cs -> Array.to_list cs
-          | None -> List.init num_dims (fun x -> x)
+    | 1 | 2 -> Ok (adjust_global ~min ~max nd)
+    | 3 ->
+        let _num_chans = (A.shape nd).(2) in
+        let chans =
+          match channels with
+          | Some cs -> cs
+          | None -> Array.init num_dims Fun.id
         in
-        failwith "Not implemented"
+        let img_chans = A.split ~axis:2 [| 1; 1; 1 |] nd in
+        Ok
+          ( Array.mapi
+              (fun i c ->
+                if Array.mem i chans then adjust_global ~min ~max c else c)
+              img_chans
+          |> A.concatenate ~axis:2 )
+    | x -> Error (`Invalid_dimensions x)
 
   let rgb2gray img =
     let dims = A.shape img in
@@ -51,7 +62,7 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
         let chans = A.split ~axis:2 [| 1; 1; 1 |] img in
         let r, g, b = (chans.(0), chans.(1), chans.(2)) in
         Ok A.((r *$ 0.2125) + (g *$ 0.7154) + (b *$ 0.0721))
-    | x -> Error (`Invalid_dimension x)
+    | x -> Error (`Invalid_dimensions x)
 
   let rgb2gray' img =
     let dims = A.shape img in
@@ -65,7 +76,7 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
     | 3 when dims.(3) = 1 ->
         let gray_mat = A.slice_left img [| dims.(0); dims.(1) |] in
         Ok (A.repeat (A.expand ~hi:true gray_mat 3) [| 1; 1; 3 |])
-    | x -> Error (`Invalid_dimension x)
+    | x -> Error (`Invalid_dimensions x)
 end
 
 module S = Make (Owl.Dense.Ndarray.S)
