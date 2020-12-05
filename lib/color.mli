@@ -35,6 +35,24 @@ module type Color = sig
   (** [gray2rgb nd] converts the given grayscale image data [nd]
       to a 3 channel RGB image. Works for both 2d or single channel 3d image data
       as input. Otherwise an [`Invalid_dimensions n] error is returned. *)
+
+  val rgb2hsv :
+    ary_type ->
+    ( ary_type,
+      [> `Invalid_dimensions of int | `Invalid_range of float * float ] )
+    result
+  (** [rgb2hsv nd] converts the given RGB image to HSV color space.
+      It returns an [`Invalid_dimensions n] error if the given RGB image has not 3 dimensions
+      with 3 color channels. *)
+
+  val hsv2rgb :
+    ary_type ->
+    ( ary_type,
+      [> `Invalid_dimensions of int | `Invalid_range of float * float ] )
+    result
+  (** [rgb2hsv nd] converts the given HSV image to RGB color space.
+      It returns an [`Invalid_dimensions n] error if the given input image has not 3 dimensions
+      with 3 color channels. *)
 end
 
 module S : Color with type ary_type := Owl.Dense.Ndarray.S.arr

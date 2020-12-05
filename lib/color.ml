@@ -26,6 +26,18 @@ module type Color = sig
   val rgb2gray' : ary_type -> (ary_type, [> `Invalid_dimensions of int ]) result
 
   val gray2rgb : ary_type -> (ary_type, [> `Invalid_dimensions of int ]) result
+
+  val rgb2hsv :
+    ary_type ->
+    ( ary_type,
+      [> `Invalid_dimensions of int | `Invalid_range of float * float ] )
+    result
+
+  val hsv2rgb :
+    ary_type ->
+    ( ary_type,
+      [> `Invalid_dimensions of int | `Invalid_range of float * float ] )
+    result
 end
 
 module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
@@ -47,11 +59,11 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
         in
         let img_chans = A.split ~axis:2 [| 1; 1; 1 |] nd in
         Ok
-          ( Array.mapi
-              (fun i c ->
-                if Array.mem i chans then adjust_global ~min ~max c else c)
-              img_chans
-          |> A.concatenate ~axis:2 )
+          (Array.mapi
+             (fun i c ->
+               if Array.mem i chans then adjust_global ~min ~max c else c)
+             img_chans
+          |> A.concatenate ~axis:2)
     | x -> Error (`Invalid_dimensions x)
 
   let rgb2gray img =
@@ -77,6 +89,21 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
         let gray_mat = A.slice_left img [| dims.(0); dims.(1) |] in
         Ok (A.repeat (A.expand ~hi:true gray_mat 3) [| 1; 1; 3 |])
     | x -> Error (`Invalid_dimensions x)
+
+  let rgb2hsv img =
+    let min_val, max_val = A.minmax' img in
+    if max_val > 1.0 && min_val < 0.0 then
+      Error (`Invalid_range (min_val, max_val))
+    else failwith "Not implemented"
+
+  let hsv2rgb img =
+    let min_hue, max_hue = A.minmax' (A.get_slice [ []; []; [ 0 ] ] img)
+    and min_val, max_val = A.minmax' (A.get_slice [ []; []; [ 1; 2 ] ] img) in
+    if max_val > 1.0 && min_val < 0.0 then
+      Error (`Invalid_range (min_val, max_val))
+    else if max_hue > 360.0 && min_hue < 0.0 then
+      Error (`Invalid_range (min_hue, max_hue))
+    else failwith "Not implemented"
 end
 
 module S = Make (Owl.Dense.Ndarray.S)
