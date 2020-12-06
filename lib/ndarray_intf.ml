@@ -17,5 +17,17 @@ module type Ndarray = sig
   (* operators *)
   val ( + ) : arr -> arr -> arr
 
+  val ( * ) : arr -> arr -> arr
+
+  val ( +$ ) : arr -> elt -> arr
+
+  val ( -$ ) : arr -> elt -> arr
+
+  val ( $- ) : elt -> arr -> arr
+
   val ( *$ ) : arr -> elt -> arr
+
+  val ( /$ ) : arr -> elt -> arr
+
+  val ( %$ ) : arr -> elt -> arr
 end

@@ -96,6 +96,8 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
       Error (`Invalid_range (min_val, max_val))
     else failwith "Not implemented"
 
+  (* https://en.wikipedia.org/wiki/HSL_and_HSV#To_RGB *)
+
   let hsv2rgb img =
     let min_hue, max_hue = A.minmax' (A.get_slice [ []; []; [ 0 ] ] img)
     and min_val, max_val = A.minmax' (A.get_slice [ []; []; [ 1; 2 ] ] img) in
@@ -103,7 +105,13 @@ module Make (A : Ndarray) : Color with type ary_type := A.arr = struct
       Error (`Invalid_range (min_val, max_val))
     else if max_hue > 360.0 && min_hue < 0.0 then
       Error (`Invalid_range (min_hue, max_hue))
-    else failwith "Not implemented"
+    else
+      let h = A.get_slice [ []; []; [ 0 ] ] img
+      and s = A.get_slice [ []; []; [ 1 ] ] img
+      and v = A.get_slice [ []; []; [ 2 ] ] img in
+      let c = A.(v * s) and h' = A.(h /$ 60.0) in
+      let _x = A.(c * (1.0 $- abs ((h' %$ 2.0) -$ 1.0))) in
+      failwith "Not implemented"
 end
 
 module S = Make (Owl.Dense.Ndarray.S)
